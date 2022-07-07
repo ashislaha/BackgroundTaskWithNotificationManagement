@@ -11,10 +11,29 @@ import CoreData
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+	func saveLog(input: String) {
+		if let existingArray = UserDefaults.standard.value(forKey: "log") as? [String] {
+			UserDefaults.standard.set([input] + existingArray, forKey: "log")
+		} else {
+			// first time
+			UserDefaults.standard.set([input], forKey: "log")
+		}
+	}
+	
+	func retrieveLog() -> [String] {
+		return UserDefaults.standard.value(forKey: "log") as? [String] ?? []
+	}
+	
+	
+	func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+		
+		saveLog(input: "willFinishLaunching: \(Date())")
+		return true
+	}
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-		// Override point for customization after application launch.
+		
+		saveLog(input: "didFinishLaunching: \(Date())")
 		return true
 	}
 

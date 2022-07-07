@@ -5,15 +5,17 @@
 //  Created by Ashis Laha on 09/05/22.
 //
 
-import Foundation
+import UIKit
 
 class FRENotificationConfiguration: LocalNotificationConfiguration {
+	
+	var requestIdentifier: String = "FRE request ID"
 	
 	var localizedTitle: String =  "Know the app"
 	
 	var localizedBody: String {
 		get {
-			return "Please check the First Run experience"
+			return "Please check the First Run experience)"
 		}
 		set {
 			
@@ -26,8 +28,10 @@ class FRENotificationConfiguration: LocalNotificationConfiguration {
 	
 	// trigger
 	
-	// trigger this notification after 1.5 min.
+	// trigger this notification after 2 min when BGTask is not running
 	var triggerWithTimeInterval: TimeInterval = TimeInterval(60 * 1.5)
 	
 	var backgroundAppRefreshTaskIdentifier = "com.fre.localNotificationRefresh"
+	
+	var backgroundProcessingTaskIdentifier: String = "com.fre.bgProcessing"
 }

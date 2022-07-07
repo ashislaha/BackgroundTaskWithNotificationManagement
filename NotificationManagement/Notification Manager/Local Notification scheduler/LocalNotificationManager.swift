@@ -20,7 +20,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 		super.init()
 	}
 	
-	func setUpNotification(with configuration: LocalNotificationConfiguration) {
+	func setUpNotification(with configuration: LocalNotificationConfiguration, shouldScheduleNow: Bool = false) {
 		
 		// content
 		let content = UNMutableNotificationContent()
@@ -31,22 +31,28 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 		// trigger
 		var trigger: UNNotificationTrigger?
 		
-		switch configuration.triggerType {
-		case .timeInterval:
-			if let timeInterval = configuration.triggerWithTimeInterval, timeInterval >= 60  {
-				trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval,
-															repeats: false)
+		if shouldScheduleNow {
+			trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60 /* minimum time is 1 min*/,
+														repeats: configuration.isRepeatativeTrigger)
+		} else {
+			
+			switch configuration.triggerType {
+			case .timeInterval:
+				if let timeInterval = configuration.triggerWithTimeInterval, timeInterval >= 60  {
+					trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval,
+																repeats: configuration.isRepeatativeTrigger)
+				}
+			case .calendar:
+				if let dateComponent = configuration.triggerWithDateComponent {
+					trigger = UNCalendarNotificationTrigger(dateMatching: dateComponent,
+															repeats: configuration.isRepeatativeTrigger)
+				}
+			default: break
 			}
-		case .calendar:
-			if let dateComponent = configuration.triggerWithDateComponent {
-				trigger = UNCalendarNotificationTrigger(dateMatching: dateComponent,
-														repeats: false)
-			}
-		default: break
 		}
 		
 		if let trigger = trigger {
-			let request = UNNotificationRequest(identifier: configuration.backgroundAppRefreshTaskIdentifier,
+			let request = UNNotificationRequest(identifier: configuration.requestIdentifier,
 												content: content,
 												trigger: trigger)
 			
@@ -58,9 +64,12 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 					print(error.localizedDescription)
 				} else {
 					// success
-					UserDefaults.standard.set(configuration.isRepeatativeTrigger,
-											  forKey: configuration.backgroundAppRefreshTaskIdentifier)
-					os_log("1. New Notification is added with ID - \(configuration.backgroundAppRefreshTaskIdentifier)")
+//					let backgroundTaskDict: [String: String] = [
+//						"backgroundAppRefreshTaskId": configuration.backgroundAppRefreshTaskIdentifier,
+//						"backgroundProcessingTaskId": configuration.backgroundProcessingTaskIdentifier
+//					]
+//					UserDefaults.standard.set(backgroundTaskDict, forKey: configuration.requestIdentifier)
+					os_log("1. New Notification is added with ID - \(configuration.requestIdentifier)")
 				}
 			}
 		}
@@ -93,10 +102,21 @@ extension NotificationManager {
 		let requestIdentifier = response.notification.request.identifier
 		os_log("2. didReceive response - request ID \(requestIdentifier)")
 		
-		if let _ = UserDefaults.standard.value(forKey: requestIdentifier) as? Bool {
-			unregisterNotification(with: requestIdentifier)
-			BackGroundTaskScheduler.shared.cancelBackgroundAppRefresh(with: requestIdentifier)
-		}
+		// reset local notification service
+		unregisterNotification(with: requestIdentifier)
+		
+//		if let backgroundTaskIdsDict = UserDefaults.standard.value(forKey: requestIdentifier) as? [String: String] {
+//
+//			// reset app refresh task
+//			if let bgAppRefrshTaskId = backgroundTaskIdsDict["backgroundAppRefreshTaskId"] {
+//				BackGroundTaskScheduler.shared.cancelBackgroundTask(with: bgAppRefrshTaskId)
+//			}
+//
+//			// reset background processing task
+//			if let bgProcessingTaskId = backgroundTaskIdsDict["backgroundProcessingTaskId"] {
+//				BackGroundTaskScheduler.shared.cancelBackgroundTask(with: bgProcessingTaskId)
+//			}
+//		}
 		
 		// system actions
 		if response.actionIdentifier == UNNotificationDismissActionIdentifier {

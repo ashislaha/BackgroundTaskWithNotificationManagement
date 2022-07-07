@@ -28,7 +28,6 @@
 		55C6862D281BC33F004C2ED3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 55C6862B281BC33F004C2ED3 /* LaunchScreen.storyboard */; };
 		55DD52BD282647F500F952F4 /* LocalNotificationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD52BC282647F500F952F4 /* LocalNotificationConfiguration.swift */; };
 		55DD52BF2826480200F952F4 /* LocalNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD52BE2826480200F952F4 /* LocalNotificationManager.swift */; };
-		55F669CD2831FA9A001D8C71 /* TestLocalNotificationConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F669CC2831FA9A001D8C71 /* TestLocalNotificationConfiguration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,7 +88,6 @@
 		55C6862E281BC33F004C2ED3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55DD52BC282647F500F952F4 /* LocalNotificationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationConfiguration.swift; sourceTree = "<group>"; };
 		55DD52BE2826480200F952F4 /* LocalNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationManager.swift; sourceTree = "<group>"; };
-		55F669CC2831FA9A001D8C71 /* TestLocalNotificationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLocalNotificationConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,12 +117,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		554AB4CF28506EBA0079A34F /* Unused */ = {
+			isa = PBXGroup;
+			children = (
+				5568C3D8282E8462007A22DF /* BackgroundNetworkService.swift */,
+			);
+			path = Unused;
+			sourceTree = "<group>";
+		};
+		554AB4D028506ED60079A34F /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				55C68623281BC33D004C2ED3 /* Main.storyboard */,
+				55C68629281BC33F004C2ED3 /* Assets.xcassets */,
+				55C6862B281BC33F004C2ED3 /* LaunchScreen.storyboard */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		554AB4D128506EF80079A34F /* BGTask scheduler */ = {
+			isa = PBXGroup;
+			children = (
+				5568C3D6282BD30B007A22DF /* BackGroundTaskScheduler.swift */,
+			);
+			path = "BGTask scheduler";
+			sourceTree = "<group>";
+		};
+		554AB4D228506F050079A34F /* Local Notification scheduler */ = {
+			isa = PBXGroup;
+			children = (
+				55DD52BE2826480200F952F4 /* LocalNotificationManager.swift */,
+			);
+			path = "Local Notification scheduler";
+			sourceTree = "<group>";
+		};
 		5568C3AD28297D9E007A22DF /* Consumer */ = {
 			isa = PBXGroup;
 			children = (
 				5568C3A72827F83E007A22DF /* NewsNotificationConfiguration.swift */,
 				5568C3AB282970EA007A22DF /* FRENotificationConfiguration.swift */,
-				55F669CC2831FA9A001D8C71 /* TestLocalNotificationConfiguration.swift */,
 			);
 			path = Consumer;
 			sourceTree = "<group>";
@@ -132,10 +163,9 @@
 		5568C3AE28297DAB007A22DF /* Notification Manager */ = {
 			isa = PBXGroup;
 			children = (
-				5568C3D6282BD30B007A22DF /* BackGroundTaskScheduler.swift */,
 				55DD52BC282647F500F952F4 /* LocalNotificationConfiguration.swift */,
-				55DD52BE2826480200F952F4 /* LocalNotificationManager.swift */,
-				5568C3D8282E8462007A22DF /* BackgroundNetworkService.swift */,
+				554AB4D128506EF80079A34F /* BGTask scheduler */,
+				554AB4D228506F050079A34F /* Local Notification scheduler */,
 			);
 			path = "Notification Manager";
 			sourceTree = "<group>";
@@ -197,11 +227,10 @@
 				55C68621281BC33D004C2ED3 /* ViewController.swift */,
 				5568C3AE28297DAB007A22DF /* Notification Manager */,
 				5568C3AD28297D9E007A22DF /* Consumer */,
-				5568C3A92828C278007A22DF /* Notifications.plist */,
-				55C68623281BC33D004C2ED3 /* Main.storyboard */,
-				55C68629281BC33F004C2ED3 /* Assets.xcassets */,
-				55C6862B281BC33F004C2ED3 /* LaunchScreen.storyboard */,
+				554AB4CF28506EBA0079A34F /* Unused */,
+				554AB4D028506ED60079A34F /* Assets */,
 				55C6862E281BC33F004C2ED3 /* Info.plist */,
+				5568C3A92828C278007A22DF /* Notifications.plist */,
 				55C68626281BC33D004C2ED3 /* NotificationManagement.xcdatamodeld */,
 			);
 			path = NotificationManagement;
@@ -357,7 +386,6 @@
 			files = (
 				5568C3A82827F83E007A22DF /* NewsNotificationConfiguration.swift in Sources */,
 				55DD52BF2826480200F952F4 /* LocalNotificationManager.swift in Sources */,
-				55F669CD2831FA9A001D8C71 /* TestLocalNotificationConfiguration.swift in Sources */,
 				5568C3AC282970EA007A22DF /* FRENotificationConfiguration.swift in Sources */,
 				55C68622281BC33D004C2ED3 /* ViewController.swift in Sources */,
 				55C6861E281BC33D004C2ED3 /* AppDelegate.swift in Sources */,

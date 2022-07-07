@@ -27,17 +27,21 @@ import Foundation
 }
 
 @objc protocol LocalNotificationConfiguration: BGTaskConfiguration,
+											   LocalNotificationRequestConfiguration,
 												LocalNotificationContentConfiguration,
-												LocalNotificationTriggerConfiguration {
-	
-	// note - this can be same as backgroundAppRefreshTaskIdentifier and we can get rid of it.
-	@objc optional var notificationRequestIdentifier: String {get set}
-	
+												LocalNotificationTriggerConfiguration {	
 }
 
 @objc protocol BGTaskConfiguration {
 	
 	var backgroundAppRefreshTaskIdentifier: String {get set}
+	
+	var backgroundProcessingTaskIdentifier: String { get set }
+}
+
+@objc protocol LocalNotificationRequestConfiguration: AnyObject {
+	
+	var requestIdentifier: String { get set }
 }
 
 @objc protocol LocalNotificationContentConfiguration: AnyObject {

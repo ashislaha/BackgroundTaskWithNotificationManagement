@@ -5,7 +5,7 @@
 //  Created by Ashis Laha on 11/05/22.
 //
 
-import Foundation
+import UIKit
 import BackgroundTasks
 import OSLog
 
@@ -67,11 +67,18 @@ class BackGroundTaskScheduler {
 		BGTaskScheduler.shared.register(forTaskWithIdentifier: configuration.backgroundAppRefreshTaskIdentifier,
 										using: .main) { bgTask in
 			// Log the information
-			os_log("Background app refresh registration")
+			os_log("Background app refresh task is executing.")
 			
 			// handle app refresh task
-			self.handleAndRescheuleIfNeededLocalNotifications(task: bgTask as! BGAppRefreshTask)
+			self.handleAndRescheuleIfNeededLocalNotifications(task: bgTask)
 		}
+		
+		BGTaskScheduler.shared.register(forTaskWithIdentifier: configuration.backgroundProcessingTaskIdentifier, using: .main) { bgTask in
+			
+			os_log("Background processing task is executing")
+			self.handleAndRescheuleIfNeededLocalNotifications(task: bgTask)
+		}
+		
 	}
 	
 	// MARK: - Schedule
@@ -83,14 +90,11 @@ class BackGroundTaskScheduler {
 	}
 	
 	private func scheduleBackgroundAppRefresh(with configuration: LocalNotificationConfiguration) {
-		let request = BGAppRefreshTaskRequest(identifier: configuration.backgroundAppRefreshTaskIdentifier)
 		
-		if configuration.triggerType == .timeInterval, let interval = configuration.triggerWithTimeInterval {
-			request.earliestBeginDate = Date(timeIntervalSinceNow: interval) // refresh after x min
-		} else {
-			// default ( pending - handle it for .location and .calendar event)
-			request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // after 5 mins
-		}
+		// background app refresh
+		let minimumTimeToFetch = Date(timeIntervalSinceNow: UIApplication.backgroundFetchIntervalMinimum)
+		let request = BGAppRefreshTaskRequest(identifier: configuration.backgroundAppRefreshTaskIdentifier)
+		request.earliestBeginDate = minimumTimeToFetch
 		
 		do {
 			try BGTaskScheduler.shared.submit(request)
@@ -99,53 +103,76 @@ class BackGroundTaskScheduler {
 		} catch let error {
 			print("Could not schedule app refresh \(error.localizedDescription)")
 		}
+		
+		// background processing task
+		let requestProcessingTask = BGProcessingTaskRequest(identifier: configuration.backgroundProcessingTaskIdentifier)
+		requestProcessingTask.earliestBeginDate = minimumTimeToFetch
+		
+		do {
+			try BGTaskScheduler.shared.submit(requestProcessingTask)
+			print("BG AppRefresh Task submitted - \(configuration.backgroundProcessingTaskIdentifier)")
+			
+		} catch let error {
+			print("Could not schedule app refresh \(error.localizedDescription)")
+		}
+		
 	}
 	
 	// MARK: - Cancellation
 	
-	func cancelBackgroundAppRefresh(with identifier: String) {
+	func cancelBackgroundTask(with identifier: String) {
 		BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: identifier)
 	}
 	
-	
 	// MARK: - Handling (and reschedule if needed)
 	
-	private func handleAndRescheuleIfNeededLocalNotifications(task: BGAppRefreshTask) {
+	private func handleAndRescheuleIfNeededLocalNotifications(task: BGTask) {
+		
+		if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+			appDelegate.saveLog(input: "BGTask: \(Date())")
+		}
 		
 		UserDefaults.standard.set(Date(), forKey: "LastUpdate")
 		UserDefaults.standard.synchronize()
 		
-		guard let configuration: LocalNotificationConfiguration = backgroundRequestsMap[task.identifier]
-		else { return }
+		var configuration: LocalNotificationConfiguration!
 		
-//		if task.identifier == "com.news.freNotificationRefresh" {
-//			configuration = FRENotificationConfiguration()
-//		} else {
-//			configuration = NewsNotificationConfiguration()
-//		}
+		if task.identifier == "com.news.freNotificationRefresh" {
+			configuration = FRENotificationConfiguration()
+		} else {
+			configuration = NewsNotificationConfiguration()
+		}
+		
+		// cancel if any pending static local notification scheduled before
+		NotificationManager.shared.unregisterNotification(with: configuration.requestIdentifier)
+		
+		// alter the body of the notification with BGTask tag
+		let body = configuration.localizedBody
+		configuration.localizedBody = body + " [BGTask \(Date())]"
 		
 		if configuration.isRepeatativeTrigger {
 			// schedule a new app-refresh request so that it will continue to fetch the data
 			scheduleBackgroundAppRefresh(with: configuration)
 		}
 		
-		// fetch new data for title and body and update configuration if needed
-		NotificationManager.shared.setUpNotification(with: configuration)
+		NotificationManager.shared.setUpNotification(with: configuration, shouldScheduleNow: true)
 		task.setTaskCompleted(success: true)
 		
 		
+	
+		
 		/*
-		let operationQueue = OperationQueue()
-		operationQueue.maxConcurrentOperationCount = 1
-		
-		let operation = BlockOperation {
-			print("You can do more work here")
-		}
-		operationQueue.addOperation(operation)
-		
-		operation.completionBlock = {
-			task.setTaskCompleted(success: !operation.isCancelled)
-		}
+		 let operationQueue = OperationQueue()
+		 operationQueue.maxConcurrentOperationCount = 1
+		 
+		 let operation = BlockOperation {
+		 print("You can do more work here")
+		 }
+		 operationQueue.addOperation(operation)
+		 
+		 operation.completionBlock = {
+		 task.setTaskCompleted(success: !operation.isCancelled)
+		 }
 		 */
 		
 		task.expirationHandler = {

@@ -24,40 +24,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		
 		// register background tasks
 		BackGroundTaskScheduler.shared.registerBackgroundTask()
-		
-		// checking the flow
-		BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.app_refresh_test", using: .main) { task in
-			self.handleTask(task: task as! BGAppRefreshTask)
-		}
 	}
 	
-	func handleTask(task: BGAppRefreshTask) {
-		scheduleAppRefreshTask()
-		
-		
-		UserDefaults.standard.set("\(Date())", forKey: "LastUpdate")
-		UserDefaults.standard.synchronize()
-		
-		let configuration = TestLocalNotificationConfiguration()
-		NotificationManager.shared.setUpNotification(with: configuration)
-		
-		task.setTaskCompleted(success: true)
-	}
-	
-	func scheduleAppRefreshTask() {
-		let configuration = TestLocalNotificationConfiguration()
-		let schedule = BGAppRefreshTaskRequest(identifier: configuration.backgroundAppRefreshTaskIdentifier)
-		schedule.earliestBeginDate = Date(timeIntervalSinceNow: configuration.triggerWithTimeInterval)
-		
-		do {
-			try BGTaskScheduler.shared.submit(schedule)
-			print("BG request submitted \(schedule.identifier)")
-			
-		} catch let error {
-			print("Scene delegate: scheduleAppRefreshTask \(error.localizedDescription)")
-		}
-	}
-
 	func sceneDidEnterBackground(_ scene: UIScene) {
 		// Called as the scene transitions from the foreground to the background.
 		// Use this method to save data, release shared resources, and store enough scene-specific state information
@@ -67,8 +35,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		(UIApplication.shared.delegate as? AppDelegate)?.saveContext()
 		
 		BackGroundTaskScheduler.shared.scheduleBackgroundAppRefresh()
-		
-		scheduleAppRefreshTask()
 	}
 	
 	func sceneDidDisconnect(_ scene: UIScene) {
