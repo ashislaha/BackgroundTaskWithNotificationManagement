@@ -29,9 +29,9 @@ class FRENotificationConfiguration: LocalNotificationConfiguration {
 	// trigger
 	
 	// trigger this notification after 2 min when BGTask is not running
-	var triggerWithTimeInterval: TimeInterval = TimeInterval(60 * 1.5)
+	var triggerWithTimeInterval: TimeInterval = TimeInterval(60 * 2)
 	
-	var backgroundAppRefreshTaskIdentifier = "com.fre.localNotificationRefresh"
+	var backgroundAppRefreshTaskIdentifier = "com.myapp.fre.localNotificationRefresh"
 	
 	var backgroundProcessingTaskIdentifier: String = "com.fre.bgProcessing"
 }

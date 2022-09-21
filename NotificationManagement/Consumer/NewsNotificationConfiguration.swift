@@ -31,7 +31,7 @@ class NewsNotificationConfiguration: LocalNotificationConfiguration {
 	// trigger this notification after every 1 day.
 	var triggerWithTimeInterval: TimeInterval = TimeInterval(60 * 60 * 24)
 	
-	var backgroundAppRefreshTaskIdentifier = "com.news.localNotificationRefresh"
+	var backgroundAppRefreshTaskIdentifier = "com.myapp.news.localNotificationRefresh"
 	
 	var backgroundProcessingTaskIdentifier: String = "com.news.bgProcessing"
 	

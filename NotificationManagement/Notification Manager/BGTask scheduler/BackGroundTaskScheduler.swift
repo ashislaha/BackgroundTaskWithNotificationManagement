@@ -73,11 +73,13 @@ class BackGroundTaskScheduler {
 			self.handleAndRescheuleIfNeededLocalNotifications(task: bgTask)
 		}
 		
+		/*
 		BGTaskScheduler.shared.register(forTaskWithIdentifier: configuration.backgroundProcessingTaskIdentifier, using: .main) { bgTask in
 			
 			os_log("Background processing task is executing")
 			self.handleAndRescheuleIfNeededLocalNotifications(task: bgTask)
 		}
+		 */
 		
 	}
 	
@@ -105,6 +107,7 @@ class BackGroundTaskScheduler {
 		}
 		
 		// background processing task
+		/*
 		let requestProcessingTask = BGProcessingTaskRequest(identifier: configuration.backgroundProcessingTaskIdentifier)
 		requestProcessingTask.earliestBeginDate = minimumTimeToFetch
 		
@@ -115,7 +118,7 @@ class BackGroundTaskScheduler {
 		} catch let error {
 			print("Could not schedule app refresh \(error.localizedDescription)")
 		}
-		
+		*/
 	}
 	
 	// MARK: - Cancellation
@@ -137,10 +140,10 @@ class BackGroundTaskScheduler {
 		
 		var configuration: LocalNotificationConfiguration!
 		
-		if task.identifier == "com.news.freNotificationRefresh" {
-			configuration = FRENotificationConfiguration()
-		} else {
+		if task.identifier == "com.myapp.news.localNotificationRefresh" {
 			configuration = NewsNotificationConfiguration()
+		} else {
+			configuration = FRENotificationConfiguration()
 		}
 		
 		// cancel if any pending static local notification scheduled before
